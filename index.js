@@ -41,7 +41,7 @@ function calculateResult() {
 }
 
 function updateDisplay() {
-  inputField.value = input || result;
+  inputField.value = input || '0' || result;
 }
 
 document.addEventListener('keydown', function(event) {
