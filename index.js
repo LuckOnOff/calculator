@@ -4,17 +4,20 @@ const inputField = document.getElementById('calcInput');
 
 let input = '';
 let previousInput = '';
+let numbers = [];
 let result = 0;
 
 function clearResult() {
   input = '';
   previousInput = '';
+  numbers = [];
   result = 0;
   updateDisplay();
 }
 
 function deleteLast() {
   input = input.slice(0, -1);
+  numbers = numbers.slice(0, -1);
   updateDisplay();
 }
 
@@ -24,24 +27,51 @@ function appendNumber(num) {
 }
 
 function appendOperator(operator) {
-  input += operator;
+  if (input !== '') {
+    numbers.push(parseFloat(input));
+  }
+  numbers.push(operator);
+  input = '';
   updateDisplay();
 }
 
 function calculateResult() {
-  try {
-    result = eval(input);
-    previousInput = input;
-    input = String(result);
-    updateDisplay();
-  } catch (error) {
-    result = 'Error';
-    updateDisplay();
+  if (input !== '') {
+    numbers.push(parseFloat(input));
+  } else {
+    return;
   }
+  result = numbers[0];
+  console.log(numbers);
+
+  for(let i = 1; i < numbers.length; i += 2) {
+    let operator = numbers[i];
+    let nextNumber = numbers[i + 1];
+
+    if(Number.isNaN(nextNumber)) {
+      return inputField.value = 'Ошибка', setTimeout(clearResult, 1000);
+    }
+
+    if(operator === '+') {
+      result += nextNumber;
+    } else if (operator === '-') {
+      result -= nextNumber;
+    } else if (operator === '*') {
+      result *= nextNumber;
+    } else if (operator === '/') {
+      result /= nextNumber;
+      if(result === Infinity) {
+        return inputField.value = 'Ошибка', setTimeout(clearResult, 1000);
+      }
+    }
+  }
+  input = String(result);
+  numbers = [];
+  updateDisplay();
 }
 
 function updateDisplay() {
-  inputField.value = input || '0' || result;
+  inputField.value = input || '0';
 }
 
 document.addEventListener('keydown', function(event) {
@@ -61,7 +91,7 @@ document.addEventListener('keydown', function(event) {
     calculateResult();
   } else if (keyPressed === 'Backspace') {
     deleteLast();
-  } else if (keyPressed === 'c') {
+  } else if (keyPressed === 'с') {
     clearResult();
   }
   
