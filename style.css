@@ -71,16 +71,6 @@
     cursor: pointer;
 }
 
-.container-buttons-box__null{
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 1.7rem;
-    max-width: 135px;
-    min-width: 100px;
-    width: 34.5vw;
-}
-
 .container button:active{
     content: '';
     opacity: 0.7;

@@ -3,21 +3,27 @@
 const inputField = document.getElementById('calcInput');
 
 let input = '';
-let previousInput = '';
 let numbers = [];
 let result = 0;
 
 function clearResult() {
   input = '';
-  previousInput = '';
   numbers = [];
   result = 0;
   updateDisplay();
 }
 
 function deleteLast() {
-  input = input.slice(0, -1);
-  numbers = numbers.slice(0, -1);
+  if (input !== '') {
+    input = input.slice(0, -1);
+  } else if (numbers.length > 0) {
+    const lastNumber = numbers[numbers.length - 1];
+    if (typeof lastNumber === 'number') {
+      numbers[numbers.length - 1] = Math.floor(lastNumber / 10);
+    } else if (typeof lastNumber === 'string') {
+      numbers.pop();
+    }
+  }
   updateDisplay();
 }
 
@@ -29,10 +35,19 @@ function appendNumber(num) {
 function appendOperator(operator) {
   if (input !== '') {
     numbers.push(parseFloat(input));
+  } else {
+    return;
   }
   numbers.push(operator);
   input = '';
   updateDisplay();
+}
+
+function appendDecimal() {
+  if (!input.includes('.')) {
+    input += '.';
+    updateDisplay();
+  }
 }
 
 function calculateResult() {
@@ -42,13 +57,11 @@ function calculateResult() {
     return;
   }
   result = numbers[0];
-  console.log(numbers);
-
   for(let i = 1; i < numbers.length; i += 2) {
     let operator = numbers[i];
     let nextNumber = numbers[i + 1];
 
-    if(Number.isNaN(nextNumber)) {
+    if(isNaN(result)) {
       return inputField.value = 'Ошибка', setTimeout(clearResult, 1000);
     }
 
@@ -63,6 +76,8 @@ function calculateResult() {
       if(result === Infinity) {
         return inputField.value = 'Ошибка', setTimeout(clearResult, 1000);
       }
+    } else if(operator === '**') {
+      result **= nextNumber;
     }
   }
   input = String(result);
@@ -71,11 +86,11 @@ function calculateResult() {
 }
 
 function updateDisplay() {
-  inputField.value = input || '0';
+  inputField.value = numbers.join('') + input || '0';
 }
 
-document.addEventListener('keydown', function(event) {
-  const keyPressed = event.key;
+document.addEventListener('keydown', function(e) {
+  const keyPressed = e.key;
 
   if (keyPressed.startsWith('F') && keyPressed.length > 1) return;
   
@@ -84,7 +99,7 @@ document.addEventListener('keydown', function(event) {
   } else if (keyPressed === '+' || keyPressed === '-' || keyPressed === '*' || keyPressed === '/') {
     appendOperator(keyPressed);
   } else if (keyPressed === '.') {
-    appendOperator('.');
+    appendDecimal();
   } else if (keyPressed === '^') {
     appendOperator('**');
   } else if (keyPressed === 'Enter') {
