@@ -1,6 +1,40 @@
 'use strict';
 
-const inputField = document.getElementById('calcInput');
+const inputField = document.querySelector('.container-form__input');
+const buttonBox = document.querySelector('.container-buttons-box');
+
+const buttonActions = {
+  'button-dot': appendDecimal,
+  'button-clear': clearResult,
+  'button-degree': () => appendOperator('**'),
+  'button-delete-last': deleteLast,
+  'button-nine': () => appendNumber(9),
+  'button-eight': () => appendNumber(8),
+  'button-seven': () => appendNumber(7),
+  'button-divide': () => appendOperator('/'),
+  'button-six': () => appendNumber(6),
+  'button-five': () => appendNumber(5),
+  'button-four': () => appendNumber(4),
+  'button-multiplication': () => appendOperator('*'),
+  'button-three': () => appendNumber(3),
+  'button-two': () => appendNumber(2),
+  'button-one': () => appendNumber(1),
+  'button-minus': () => appendOperator('-'),
+  'button-brackets': () => {},
+  'button-zero': () => appendNumber(0),
+  'button-result': calculateResult,
+  'bottun-plus': () => appendOperator('+')
+};
+
+buttonBox.addEventListener('click', (e) => {
+  const buttonPressed = e.target;
+  const buttonClass = buttonPressed.classList[1];
+  const action = buttonActions[buttonClass];
+  
+  if (action) {
+    action();
+  }
+});
 
 let input = '';
 let numbers = [];
@@ -89,7 +123,7 @@ function updateDisplay() {
   inputField.value = numbers.join('') + input || '0';
 }
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', (e) => {
   const keyPressed = e.key;
 
   if (keyPressed.startsWith('F') && keyPressed.length > 1) return;
